@@ -4,7 +4,7 @@ A React web app to sense the face prsent in given image.
 
 ## Technologies used
 - React js for front end UI
-- Node with express.js for backend process.
+- Node with express.js for backend process (https://github.com/Manipandian/facerecognition-api).
 - PostgreSQL to store user data in databse.
 - Use clarifai API to face recognition using AI.
 - Use Heroku web service to deploy server to the online.
