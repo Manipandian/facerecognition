@@ -1,5 +1,6 @@
 import React from 'react';
 import Particles from 'react-particles-js';
+import axios from 'axios';
 import './App.css';
 import Navigation from './Component/Navigation/Navigation';
 import Logo from './Component/Logo/Logo';
@@ -80,29 +81,26 @@ onInputChange = (event) => {
 }
 
 onFileUpload = (event) => {
-  
+  let file = event.target.files[0];
   let reader = new FileReader();
-  reader.onload = () => {
-    console.log('Touch the arm', reader.result);
-    fetch(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=manipandian`,
-    {
-      method: 'POST',  
-      headers: {'Content-Type' : 'application/json'},
-      body: JSON.stringify({
-        image : reader.result
-      })
-    })
-    .then(res => res.json())
-    .then(res => console.log("O/P image", res));
-    // this.setState({input: reader.result});
-  }
-  console.log('Touch the arm', reader.result);
-
+    if(file) {
+      let fullName = file.name;
+      let fileName = fullName.substr(0, fullName.lastIndexOf('.')).toLowerCase()
+      reader.onload = async () => {
+        let imageData = await (reader.result).toString().replace(/^data:(.*,)?/, '');
+        const bodyFormData = new FormData();
+        bodyFormData.append('image', imageData);
+        console.log("Encoded data", imageData);
+        let res = await axios.post(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=${fileName}`, bodyFormData);
+          console.log("O/P image", res.data.data.url)
+        this.setState({input: res.data.data.url});
+      }
+    }
   reader.readAsDataURL(event.target.files[0]);
 }
 
 onButtonClick = () => {
-  console.log('Its an imageurl', this.state.input);
+  console.log('Its a submit image', this.state.input);
   this.setState({imageUrl: this.state.input, box: {}})
   
   fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
