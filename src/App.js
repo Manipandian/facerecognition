@@ -22,6 +22,8 @@ const particleOption = {
   }
 }
 
+const imageURLKey = "22440e1cd91b632ec17776940f9d3417";
+
 const initialState = {
       input: '',
       imageUrl: '',
@@ -77,8 +79,31 @@ onInputChange = (event) => {
   this.setState({input: event.target.value})
 }
 
+onFileUpload = (event) => {
+  
+  let reader = new FileReader();
+  reader.onload = () => {
+    console.log('Touch the arm', reader.result);
+    fetch(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=manipandian`,
+    {
+      method: 'POST',  
+      headers: {'Content-Type' : 'application/json'},
+      body: JSON.stringify({
+        image : reader.result
+      })
+    })
+    .then(res => res.json())
+    .then(res => console.log("O/P image", res));
+    // this.setState({input: reader.result});
+  }
+  console.log('Touch the arm', reader.result);
+
+  reader.readAsDataURL(event.target.files[0]);
+}
+
 onButtonClick = () => {
-  this.setState({imageUrl: this.state.input})
+  console.log('Its an imageurl', this.state.input);
+  this.setState({imageUrl: this.state.input, box: {}})
   
   fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
     method: 'POST',  
@@ -137,7 +162,7 @@ render() {
         { router === 'home' 
           ? <div>
               <Rank user={this.state.user}/>
-              <ImageLinkForm onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} user={this.state.user}/>
+              <ImageLinkForm onInputChange={this.onInputChange} onFileUpload={this.onFileUpload} onButtonClick={this.onButtonClick} user={this.state.user}/>
               <Facerecognition imageUrl={imageUrl} box={box}/>
           </div> 
           : (router === 'signin' ? <SignIn onRoutChange={this.onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={this.onRoutChange} getUser={this.getUser}/> )
