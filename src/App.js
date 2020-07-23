@@ -1,6 +1,6 @@
 import React from 'react';
 import Particles from 'react-particles-js';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import './App.css';
 import Navigation from './Component/Navigation/Navigation';
 import Logo from './Component/Logo/Logo';
@@ -9,6 +9,7 @@ import Register from './Component/Register/Register';
 import Rank from './Component/Rank/Rank';
 import ImageLinkForm from './Component/ImageLinkForm/ImageLinkForm';
 import Facerecognition from './Component/Facerecognition/Facerecognition';
+import { getUrlInput, generateURL } from './Redux/actions'
 
 
 const particleOption = {
@@ -23,10 +24,8 @@ const particleOption = {
   }
 }
 
-const imageURLKey = "22440e1cd91b632ec17776940f9d3417";
-
 const initialState = {
-      input: '',
+     //input: '',
       imageUrl: '',
       box: {},
       router: 'signin',
@@ -38,6 +37,22 @@ const initialState = {
         entries: 0,
         joined: ''
       }
+}
+
+
+const mapStateToProps = state => {
+  return {
+    input: state.storeURL.input,
+    isImageUrlPending: state.storeURL.isPending,
+    imageUrlError: state.storeURL.error
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onInputChange: (event) => dispatch(getUrlInput(event.target.value)),
+    generateUrl: (file) => dispatch(generateURL(file))
+  }
 }
 
 class App extends React.Component {
@@ -76,61 +91,66 @@ class App extends React.Component {
   }
 
 
-onInputChange = (event) => {
-  this.setState({input: event.target.value})
-}
+// onInputChange = (event) => {
+//   this.setState({input: event.target.value})
+// }
 
 onFileUpload = (event) => {
-  let file = event.target.files[0];
-  let reader = new FileReader();
-    if(file) {
-      let fullName = file.name;
-      let fileName = fullName.substr(0, fullName.lastIndexOf('.')).toLowerCase()
-      reader.onload = async () => {
-        let imageData = await (reader.result).toString().replace(/^data:(.*,)?/, '');
-        const bodyFormData = new FormData();
-        bodyFormData.append('image', imageData);
-        console.log("Encoded data", imageData);
-        let res = await axios.post(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=${fileName}`, bodyFormData);
-          console.log("O/P image", res.data.data.url)
-        this.setState({input: res.data.data.url});
-      }
+    if(event.target.files.length) {
+
+      this.props.generateUrl(event.target.files[0]);
+
+      // let reader = new FileReader();
+      // reader.readAsDataURL(event.target.files[0]);
+      // let file = event.target.files[0];
+      // let fullName = file.name;
+      // let fileName = fullName.substr(0, fullName.lastIndexOf('.')).toLowerCase()
+      // reader.onloadend = async () => {
+      //   let imageData = await (reader.result).toString().replace(/^data:(.*,)?/, '');
+      //   const bodyFormData = new FormData();
+      //   bodyFormData.append('image', imageData);
+      //   console.log("Encoded data", imageData);
+      //   let res = await axios.post(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=${fileName}`, bodyFormData);
+      //     console.log("O/P image", res.data.data.url)
+        // this.setState({this.props.input: res.data.data.url});
+     // }
     }
-  reader.readAsDataURL(event.target.files[0]);
 }
 
 onButtonClick = () => {
-  console.log('Its a submit image', this.state.input);
-  this.setState({imageUrl: this.state.input, box: {}})
-  
-  fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
-    method: 'POST',  
-    headers: {'Content-Type' : 'application/json'},
-    body: JSON.stringify({
-      input : this.state.input
-    })
-  })
-  .then(response => response.json())
-  .then(response => {
-    if(response) {
-      fetch('https://blooming-tundra-10838.herokuapp.com/image', {
-        method: 'PUT',  
+  if (this.props.imageUrlError === '' && !this.props.isImageUrlPending ) {
+      console.log('Its a submit image', this.props.input);
+      this.setState({imageUrl: this.props.input, box: {}})
+      
+      fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
+        method: 'POST',  
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
-          id: this.state.user.id
+          input : this.props.input
         })
       })
-      .then(resp => resp.json())
-      .then(count => {
-        this.setState(Object.assign(this.state.user, {entries: count}))
+      .then(response => response.json())
+      .then(response => {
+        if(response) {
+          fetch('https://blooming-tundra-10838.herokuapp.com/image', {
+            method: 'PUT',  
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify({
+              id: this.state.user.id
+            })
+          })
+          .then(resp => resp.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {entries: count}))
+          })
+          .catch(err => console.log(err));
+        }
+        this.getBoxData(this.calculateBoxLocation(response));
       })
-      .catch(err => console.log(err));
-    }
-    this.getBoxData(this.calculateBoxLocation(response));
-  })
-  .catch(err => {
-    console.log(err);
-  });
+      .catch(err => {
+        console.log(err);
+      });
+  } 
 }
 
 onRoutChange = (route) => {
@@ -141,12 +161,6 @@ onRoutChange = (route) => {
   }
   this.setState({router: route})
 }
-
-// componentDidMount() {
-//   fetch('http://localhost:3001')
-//     .then(res => res.json())
-//     .then(data => console.log(data));
-// }
 
 render() {
     const {isSignedIn, imageUrl, box, router } = this.state;
@@ -160,7 +174,7 @@ render() {
         { router === 'home' 
           ? <div>
               <Rank user={this.state.user}/>
-              <ImageLinkForm onInputChange={this.onInputChange} onFileUpload={this.onFileUpload} onButtonClick={this.onButtonClick} user={this.state.user}/>
+              <ImageLinkForm onInputChange={this.props.onInputChange } onFileUpload={this.onFileUpload} onButtonClick={this.onButtonClick} user={this.state.user}/>
               <Facerecognition imageUrl={imageUrl} box={box}/>
           </div> 
           : (router === 'signin' ? <SignIn onRoutChange={this.onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={this.onRoutChange} getUser={this.getUser}/> )
@@ -170,4 +184,6 @@ render() {
   } 
 }
 
-export default App;
+const visibleApp = connect(mapStateToProps, mapDispatchToProps)(App)
+
+export default visibleApp;
