@@ -5,8 +5,8 @@ class SignIn extends React.Component {
     constructor() {
         super();
         this.state = {
-            email: '',
-            passWord: '',
+            email: 'testing@gmail.com',
+            passWord: 'trial',
             warning: ''
         }
     }
@@ -19,7 +19,6 @@ class SignIn extends React.Component {
     }
 
     onSignIn = () => {
-       // console.log(this.state);
         fetch('https://blooming-tundra-10838.herokuapp.com/signIn', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -57,6 +56,7 @@ class SignIn extends React.Component {
                             type="email"
                             name="email-address"
                             id="email-address"
+                            value={this.state.email}
                             onChange={this.onEmailChange}
                             />
                         </div>
@@ -67,6 +67,7 @@ class SignIn extends React.Component {
                             type="password"
                             name="password" 
                             id="password"
+                            value={this.state.passWord}
                             onChange={this.onPasswordChange}
                             />
                         </div>
