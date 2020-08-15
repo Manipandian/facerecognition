@@ -4,7 +4,11 @@ import './description.css'
 
 const Description = (props) => {
     return (
-    <div className="faces-block">{`Face Detected: ${props.data}`}</div>
+    <div className="info-display">
+        <div className="face-info">
+            {`Face Detected: ${props.data}`}
+        </div>
+    </div>
     )
 }
 

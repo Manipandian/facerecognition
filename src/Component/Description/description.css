@@ -1,6 +1,28 @@
-.faces-block {
+.info-display {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.face-info {
     color: #b6b6b6;
     text-transform: uppercase;
     font-size: 0.8rem;
     font-weight: 750;
 }
+
+@media only screen and (max-width: 1000px) {
+    .info-display {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+
+
+
+
+

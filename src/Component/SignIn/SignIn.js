@@ -1,4 +1,5 @@
 import React from 'react';
+import './signIn.css';
 
 
 class SignIn extends React.Component {
@@ -43,41 +44,40 @@ class SignIn extends React.Component {
     render() {
         const {onRoutChange} = this.props;
         return(
-            <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw5 center shadow-5">
-                <main className="pa4 black-80">
+            <article className="article-class">
+                <main className="main">
                     <form className="measure">
-                    <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-                        <legend className="f4 fw6 ph0 mh0">Sign In</legend>
-                        <legend className="f6 fw6 ph0 mh0" style={{color: 'red'}}>{this.state.warning}</legend>
-                        <div className="mt3">
-                        <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-                        <input 
-                            className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                            type="email"
-                            name="email-address"
-                            id="email-address"
-                            value={this.state.email}
-                            onChange={this.onEmailChange}
-                            />
+                    <fieldset id="sign_up" className="fieldset left-right-zero">
+                        <legend className="legend-font left-right-zero">Sign In</legend>
+                        <legend className="legend-font left-right-zero" style={{color: 'red'}}>{this.state.warning}</legend>
+                        <div style={{marginTop: '1rem'}}>
+                            <label className="label" htmlFor="email-address">Email</label>
+                            <input 
+                                className="input-element"
+                                type="email"
+                                name="email-address"
+                                id="email-address"
+                                value={this.state.email}
+                                onChange={this.onEmailChange}
+                                />
                         </div>
-                        <div className="mv3">
-                        <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                        <div style={{marginTop: '1rem', marginBottom: '1rem'}}>
+                        <label className="label" htmlFor="password">Password</label>
                         <input 
-                            className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                            className="input-element"
                             type="password"
                             name="password" 
                             id="password"
                             value={this.state.passWord}
+                            style={{fontWeight: 'bold'}}
                             onChange={this.onPasswordChange}
                             />
                         </div>
                     </fieldset>
                     <div className="">
-                        <input onClick={this.onSignIn} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="button" value="Sign in"/>
+                        <input onClick={this.onSignIn} style={{fontWeight: 'bold'}} className="submit-button" type="button" value="Sign in"/>
                     </div>
-                    <div className="lh-copy mt3">
-                        <a href="#0" onClick={() => onRoutChange('register')} className="f6 link dim black db">Register</a>
-                    </div>
+                    <a href="#0" onClick={() => onRoutChange('register')} className="register-text">Register</a>
                     </form>
                 </main>
             </article>

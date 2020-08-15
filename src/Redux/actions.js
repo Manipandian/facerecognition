@@ -1,11 +1,17 @@
 import axios from 'axios';
 
 import {
-    getImageUrl
+    getImageUrl, ON_ROUTER_CHANGE
 } from './constants.js';
 
+export const onRoutChange = (route) => {
+    return {
+        type: ON_ROUTER_CHANGE,
+        payload: route
+    }
+}
+
 export const getUrlInput = (input) => {
-    // console.log("Action event", input);
     return {
         type: getImageUrl.CHANGE_URL_CONTENT,
         payload: input
@@ -24,9 +30,7 @@ export const generateURL = (file) => {
               let imageData = await (reader.result).toString().replace(/^data:(.*,)?/, '');
               const bodyFormData = new FormData();
               bodyFormData.append('image', imageData);
-            //   console.log("Encoded data", imageData);
               let res = await axios.post(`https://api.imgbb.com/1/upload?key=${imageURLKey}&name=${fileName}`, bodyFormData);
-                // console.log("O/P image", res.data.data.url)
               dispatch({type: getImageUrl.REQUEST_URL_SUCCESS, payload: res.data.data.url});
             }
 

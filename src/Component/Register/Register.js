@@ -25,7 +25,6 @@ class Register extends React.Component {
     }
 
     onSignIn = () => {
-        // console.log(this.state);
         if(!this.state.email || !this.state.name || !this.state.passWord) {
             this.setState({warning: "Please enter valid data"})
         } else {
@@ -51,45 +50,46 @@ class Register extends React.Component {
 
     render() {
         return (
-            <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw5 center shadow-5">
-                <main className="pa4 black-80">
+            <article className="article-class">
+                <main className="main">
                 <form className="measure">
-                <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-                    <legend className="f4 fw6 ph0 mh0">Register</legend>
-                    <legend className="f6 fw6 ph0 mh0" style={{color: 'red'}}>{this.state.warning}</legend>
-                    <div className="mt3">
-                    <label className="db fw6 lh-copy f6" htmlFor="email-address">Name</label>
+                <fieldset id="sign_up" className="fieldset left-right-zero">
+                    <legend className="legend-font left-right-zero">Register</legend>
+                    <legend className="legend-font left-right-zero" style={{color: 'red'}}>{this.state.warning}</legend>
+                    <div style={{marginTop: '1rem'}}>
+                    <label className="label" htmlFor="email-address">Name</label>
                     <input 
-                        className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                        className="input-element"
                         type="text"
                         name="name"
                         id="name"
                         onChange={this.onNameChange}
                         />
                     </div>
-                    <div className="mt3">
-                    <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+                    <div style={{marginTop: '1rem'}}>
+                    <label className="label" htmlFor="email-address">Email</label>
                     <input 
-                        className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                        className="input-element"
                         type="email"
                         name="email-address"
                         id="email-address"
                         onChange={this.onEmailChange}
                         />
                     </div>
-                    <div className="mv3">
-                    <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+                    <div style={{marginTop: '1rem', marginBottom: '1rem'}}>
+                    <label className="label" htmlFor="password">Password</label>
                     <input 
-                        className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                        className="input-element"
                         type="password"
                         name="password"
                         id="password"
+                        style={{fontWeight: 'bold'}}
                         onChange={this.onPasswordChange}
                         />
                     </div>
                 </fieldset>
                 <div className="">
-                    <input onClick={this.onSignIn}   className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="button" value="Sign in"/>
+                    <input onClick={this.onSignIn} className="submit-button" type="button" value="Sign in"/>
                 </div>
                 </form>
             </main>

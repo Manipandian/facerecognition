@@ -3,13 +3,10 @@ import Particles from 'react-particles-js';
 import { connect } from 'react-redux';
 import './App.css';
 import Navigation from './Component/Navigation/Navigation';
-import Logo from './Component/Logo/Logo';
 import SignIn from './Component/SignIn/SignIn';
 import Register from './Component/Register/Register';
-import Rank from './Component/Rank/Rank';
 import Overframe from './Component/Over-frame/over-frame';
-import { getUrlInput, generateURL } from './Redux/actions'
-
+import { getUrlInput, generateURL, onRoutChange } from './Redux/actions'
 
 const particleOption = {
   particles: {
@@ -24,11 +21,8 @@ const particleOption = {
 }
 
 const initialState = {
-     //input: '',
-      // imageUrl: '',
       box: {},
-      router: 'signin',
-      isSignedIn: false,
+      clarifaiResponse: {},
       user: {
         id: '',
         name: '',
@@ -39,22 +33,26 @@ const initialState = {
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = ( state) => {
   return {
     input: state.storeURL.input,
     isImageUrlPending: state.storeURL.isPending,
-    imageUrlError: state.storeURL.error
+    imageUrlError: state.storeURL.error,
+    isSignedIn: state.storeURL.isSignedIn,
+    router: state.storeURL.router
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onInputChange: (event) => dispatch(getUrlInput(event.target.value)),
-    generateUrl: (file) => dispatch(generateURL(file))
+    generateUrl: (file) => dispatch(generateURL(file)),
+    onRoutChange: (route) => dispatch(onRoutChange(route))
   }
 }
 
 class App extends React.Component {
+
   constructor() {
     super();  
     this.state = initialState;
@@ -72,7 +70,7 @@ class App extends React.Component {
     })
   }
 
-  calculateBoxLocation = (response) => {
+  calculateBoxLocation = (response, imageUrl) => {
     const clarfaiRegions = response.outputs[0].data;
     const boxElement = document.getElementById('clarifai-box');
     const width = Number(boxElement.width);
@@ -87,30 +85,29 @@ class App extends React.Component {
           right: width - clarfaiLocation.right_col * width
         }
       }) : [];
-    console.log(finalBoxes);
     return {
       width: width,
       height: height,
+      currentImageUrl: imageUrl, 
       locations: finalBoxes}
   }
 
   getBoxData = (data) => {
+
     this.setState({box: data});
   }
 
-onFileUpload = (event) => {
-    if(event.target.files.length) {
-      this.setState({box: {}});
-      this.props.generateUrl(event.target.files[0]);
-      
-    }
-}
+  onFileUpload = (event) => {
+      if(event.target.files.length) {
+        this.setState({box: {}});
+        this.props.generateUrl(event.target.files[0]);
+        
+      }
+  }
 
 onButtonClick = (imageUrl) => {
-  if (this.props.imageUrlError === '' && !this.props.isImageUrlPending ) {
-      // console.log('Its a submit image', this.props.input);
-      // this.setState({imageUrl: this.props.input, box: {}})
-      
+  
+  if (this.props.imageUrlError === '' && !this.props.isImageUrlPending ) {    
       fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
         method: 'POST',  
         headers: {'Content-Type' : 'application/json'},
@@ -120,22 +117,8 @@ onButtonClick = (imageUrl) => {
       })
       .then(response => response.json())
       .then(response => {
-        // if(response) {
-        //   fetch('https://blooming-tundra-10838.herokuapp.com/image', {
-        //     method: 'PUT',  
-        //     headers: {'Content-Type' : 'application/json'},
-        //     body: JSON.stringify({
-        //       id: this.state.user.id
-        //     })
-        //   })
-        //   .then(resp => resp.json())
-        //   .then(count => {
-        //     this.setState(Object.assign(this.state.user, {entries: count}))
-        //   })
-        //   .catch(err => console.log(err));
-        // }
-        console.log(response);
-        this.getBoxData(this.calculateBoxLocation(response));
+        this.setState({clarifaiResponse: response});
+        this.getBoxData(this.calculateBoxLocation(response, imageUrl));
       })
       .catch(err => {
         console.log(err);
@@ -143,41 +126,47 @@ onButtonClick = (imageUrl) => {
   } 
 }
 
-onRoutChange = (route) => {
-  if (route === 'home') {
-    this.setState({isSignedIn: true});
-  } else {
-    this.setState(  );
+changeBoxsize = (e) => {
+  if(this.props.isSignedIn) {
+    let currentImageElement = document.getElementById('clarifai-box');
+    if(this.state.box.width !== Number(currentImageElement.width) || this.state.box.height !== Number(currentImageElement.height)) {
+      this.getBoxData(this.calculateBoxLocation(this.state.clarifaiResponse, this.props.input));
+    }
+  
   }
-  this.setState({router: route})
 }
 
-// componentDidMount() {}
+componentDidMount() {
+  window.addEventListener('resize', this.changeBoxsize);
+}
+
+componentWillUnmount() {
+  window.addEventListener('resize', this.changeBoxsize);
+}
+
+
 
 render() {
-    const {isSignedIn, box, router } = this.state;
+    const { box } = this.state;
+    const {input, onInputChange, onRoutChange, isSignedIn, router} = this.props;
     return (
       <div className="App">
                <Particles className="particle"
                 params={particleOption}
               />
-        <Navigation onRoutChange={this.onRoutChange} isSignedIn={isSignedIn}/>
-        {/* <Logo/> */}
+        <Navigation onRoutChange={onRoutChange} isSignedIn={isSignedIn}/>
         { router === 'home' 
           ? <div className="card-outer">
-              {/* <Rank user={this.state.user}/> */}
-              {/* <ImageLinkForm onInputChange={this.props.onInputChange } onFileUpload={this.onFileUpload} onButtonClick={this.onButtonClick} user={this.state.user}/>
-              <Facerecognition imageUrl={imageUrl} box={box}/> */}
               <Overframe 
-                imageUrl={this.props.input} 
+                imageUrl={input} 
                 box={box}
-                onInputChange={this.props.onInputChange}
+                onInputChange={onInputChange}
                 onFileUpload={this.onFileUpload}
                 onButtonClick={this.onButtonClick}
                 user={this.state.user}
               ></Overframe>
           </div> 
-          : (router === 'signin' ? <SignIn onRoutChange={this.onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={this.onRoutChange} getUser={this.getUser}/> )
+          : (router === 'signin' ? <SignIn onRoutChange={onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={onRoutChange} getUser={this.getUser}/> )
         }
       </div>
     );

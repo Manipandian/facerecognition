@@ -29,3 +29,106 @@
   flex-direction: column;
   align-items: center;
 }
+
+/* Style for signIn and regidter form */
+
+.article-class {
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 16rem;
+  box-shadow: 4px 4px 8px 0 rgba( 0, 0, 0, .2 );
+  border-radius: .5rem;
+  border: 1px solid rgba( 0, 0, 0, .1 );
+  color: #333;
+}
+
+@media screen and (max-width: 60em) and (min-width: 30em) {
+  .article-class {
+      width: 50%;
+  }
+}
+
+@media screen and (min-width: 60em) {
+  .article-class {
+      width: 25%;
+  }
+}
+
+.main {
+  color: rgba( 0, 0, 0, .8 );
+  padding: 2rem;
+}
+
+.measure {
+  max-width: 30em
+}
+
+.fieldset {
+  border: solid 1px transparent;
+}
+
+.left-right-zero {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.legend-font {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.label {
+  font-size: .875rem;
+  line-height: 1.5;
+  font-weight: 600;
+  display: block;
+}
+
+.input-element {
+  padding: .5rem;
+  background-color: transparent;
+  width: 100%;
+  border-style: solid;
+  border-width: 1px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-family: inherit;
+  font-size: 100%;
+}
+
+.input-element:focus, .input-element:hover {
+  background-color: #000;
+  color: #fff
+}
+
+.submit-button {
+  backface-visibility: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  background-color: transparent;
+  font-weight: 700;
+  display: inline-block;
+  border: 1px solid #000;
+  font-size: .875rem;
+  backface-visibility: hidden;
+  transform: translateZ( 0 );
+  transition: transform .25s ease-out;
+  font-family: inherit;
+  font-size: 100%;
+}
+
+.submit-button:hover, .submit-button:focus {
+  cursor: pointer;
+  transform: scale( 1.05 );
+}
+
+.submit-button:active {
+  transform: scale(.9);
+}

@@ -6,5 +6,7 @@ export const getImageUrl = {
     REQUEST_URL_FAILED: "REQUEST_URL_FAILED"
 }
 
+export const ON_ROUTER_CHANGE = "ON_ROUTER_CHANGE";
+
 
 

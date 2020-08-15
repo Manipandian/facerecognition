@@ -1,0 +1,19 @@
+.register-text {
+    line-height: 1.5;
+    opacity: 1;
+    font-size: .875rem;
+    margin-top: 1rem;
+    color: #000;
+    text-decoration: none;
+    display: block;
+}
+
+.register-text:hover {
+    transition: color .15s ease-in;
+    opacity: 0.5
+} 
+
+.register-text:active, .register-text:focus {
+    transition: color .15s ease-in;
+    opacity: 0.8
+}

@@ -1,16 +1,26 @@
 import {
-    getImageUrl
+    getImageUrl, ON_ROUTER_CHANGE
 } from './constants.js';
 
-export const urlStore = {
-    input: 'https://i.ibb.co/tD1bq4b/1392771.jpg',
+export const mainStore = {
+    input: '',
     isPending: false,
-    error: ''
+    error: '',
+    isSignedIn: false,
+    router: 'signin'
 }
 
-export const storeURL = (state = urlStore, action = {}) => {
-    // console.log()
+
+const updateRoute = (route, state) => {
+    return route === 'home' ?
+    Object.assign({}, state, {input: 'https://i.ibb.co/tD1bq4b/1392771.jpg', isSignedIn: true, router: route}) :
+    Object.assign({}, state, {isSignedIn: false, router: route});
+}
+
+export const storeURL = (state = mainStore, action = {}) => {
     switch(action.type) {
+        case ON_ROUTER_CHANGE:
+            return updateRoute(action.payload, state);
         case getImageUrl.REQUEST_URL_PENDING: 
         return Object.assign({}, state, {isPending: true, input: ''});
         case getImageUrl.CHANGE_URL_CONTENT:
