@@ -21,9 +21,18 @@
   z-index: -1;
 }
 
+/* main home content */
+.home-main {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  position: fixed;
+}
+
+
 .card-outer {
   height: 80vh;
-  /* margin-left: 5rem; */
+  margin-left: 5rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -132,3 +141,4 @@
 .submit-button:active {
   transform: scale(.9);
 }
+

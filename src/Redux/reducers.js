@@ -28,6 +28,8 @@ export const storeURL = (state = mainStore, action = {}) => {
             return Object.assign({}, state, {isPending: false, input: action.payload});
         case getImageUrl.REQUEST_URL_FAILED:
             return Object.assign({}, state, {isPending: false, error: action.payload});
+        case getImageUrl.GET_DIRECT_URL_CONTENT:
+            return Object.assign({}, state, {isPending: false, input: action.payload});
         default:
             return state;
     }

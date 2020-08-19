@@ -18,6 +18,20 @@ export const getUrlInput = (input) => {
     }
 }
 
+export const getDirectUrl = () => {
+    let inputElement = document.getElementById('url-text-box');
+    console.log(inputElement.value);
+    if(inputElement.value && inputElement.value !== '') {
+        return {
+            type: getImageUrl.GET_DIRECT_URL_CONTENT,
+            payload: inputElement.value
+        }
+    }
+    return {
+        type: getImageUrl.GET_DIRECT_URL_EMPTY
+    }
+}
+
 export const generateURL = (file) => {
     const imageURLKey = "22440e1cd91b632ec17776940f9d3417";
     return async (dispatch) => {

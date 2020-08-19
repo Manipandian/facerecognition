@@ -6,7 +6,8 @@ import Navigation from './Component/Navigation/Navigation';
 import SignIn from './Component/SignIn/SignIn';
 import Register from './Component/Register/Register';
 import Overframe from './Component/Over-frame/over-frame';
-import { getUrlInput, generateURL, onRoutChange } from './Redux/actions'
+import Options from './Component/Options/options';
+import { getUrlInput, generateURL, onRoutChange, getDirectUrl } from './Redux/actions'
 
 const particleOption = {
   particles: {
@@ -47,7 +48,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onInputChange: (event) => dispatch(getUrlInput(event.target.value)),
     generateUrl: (file) => dispatch(generateURL(file)),
-    onRoutChange: (route) => dispatch(onRoutChange(route))
+    onRoutChange: (route) => dispatch(onRoutChange(route)),
+    getDirectUrl: () => dispatch(getDirectUrl())
   }
 }
 
@@ -75,14 +77,25 @@ class App extends React.Component {
     const boxElement = document.getElementById('clarifai-box');
     const width = Number(boxElement.width);
     const height = Number(boxElement.height);
+    const getIndex = (data, vocab) => data.vocab_id === vocab;
     let finalBoxes = Object.keys(clarfaiRegions).length ?
       (clarfaiRegions.regions).map((region) => {
+        let concepts = region.data.concepts;
+        let ageIndex = concepts.findIndex(data => getIndex(data, "age_appearance"));
+        let genderIndex = concepts.findIndex(data => getIndex(data, "gender_appearance"));
+        let cultureIndex = concepts.findIndex(data => getIndex(data, "multicultural_appearance"));
         let clarfaiLocation = region.region_info.bounding_box;
+        console.log(concepts[ageIndex].name);
+        console.log(concepts[genderIndex].name);
+        console.log(concepts[cultureIndex].name);
         return {
           top: height * clarfaiLocation.top_row,
           left: width * clarfaiLocation.left_col,
           bottom: height - clarfaiLocation.bottom_row * height,
-          right: width - clarfaiLocation.right_col * width
+          right: width - clarfaiLocation.right_col * width,
+          age: concepts[ageIndex].name,
+          gender: concepts[genderIndex].name,
+          culture: concepts[cultureIndex].name
         }
       }) : [];
     return {
@@ -117,6 +130,7 @@ onButtonClick = (imageUrl) => {
       })
       .then(response => response.json())
       .then(response => {
+        console.log(response);
         this.setState({clarifaiResponse: response});
         this.getBoxData(this.calculateBoxLocation(response, imageUrl));
       })
@@ -148,7 +162,7 @@ componentWillUnmount() {
 
 render() {
     const { box } = this.state;
-    const {input, onInputChange, onRoutChange, isSignedIn, router} = this.props;
+    const {input, onInputChange, onRoutChange, isSignedIn, router, getDirectUrl} = this.props;
     return (
       <div className="App">
                <Particles className="particle"
@@ -156,16 +170,20 @@ render() {
               />
         <Navigation onRoutChange={onRoutChange} isSignedIn={isSignedIn}/>
         { router === 'home' 
-          ? <div className="card-outer">
-              <Overframe 
-                imageUrl={input} 
-                box={box}
-                onInputChange={onInputChange}
-                onFileUpload={this.onFileUpload}
-                onButtonClick={this.onButtonClick}
-                user={this.state.user}
-              ></Overframe>
-          </div> 
+          ? <div> 
+              {/* <Options/>  */}
+              <div className="card-outer">
+                <Overframe 
+                    imageUrl={input} 
+                    box={box}
+                    getDirectUrl={getDirectUrl}
+                    onInputChange={onInputChange}
+                    onFileUpload={this.onFileUpload}
+                    onButtonClick={this.onButtonClick}
+                    user={this.state.user}
+                  ></Overframe>
+              </div>
+            </div> 
           : (router === 'signin' ? <SignIn onRoutChange={onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={onRoutChange} getUser={this.getUser}/> )
         }
       </div>

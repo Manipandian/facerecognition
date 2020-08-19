@@ -12,8 +12,8 @@
 .box-label {
     background: #149df2;
     color: white;
-    height: 0.9rem;
-    font-size: 0.7rem;
+    text-align: center;
+    font-size: 0.6rem;
     left: 0;
     position: absolute;
     font-family: sofia-pro, sans-serif;
