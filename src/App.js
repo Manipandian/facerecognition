@@ -106,7 +106,6 @@ class App extends React.Component {
   }
 
   getBoxData = (data) => {
-
     this.setState({box: data});
   }
 
@@ -125,7 +124,8 @@ onButtonClick = (imageUrl) => {
         method: 'POST',  
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
-          input : imageUrl
+          input : imageUrl,
+          type: 'face'
         })
       })
       .then(response => response.json())
