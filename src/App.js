@@ -7,7 +7,7 @@ import SignIn from './Component/SignIn/SignIn';
 import Register from './Component/Register/Register';
 import Overframe from './Component/Over-frame/over-frame';
 import Options from './Component/Options/options';
-import { getUrlInput, generateURL, onRoutChange, getDirectUrl } from './Redux/actions'
+import { getUrlInput, generateURL, onRoutChange, getDirectUrl, changeOperation} from './Redux/actions'
 
 const particleOption = {
   particles: {
@@ -40,7 +40,8 @@ const mapStateToProps = ( state) => {
     isImageUrlPending: state.storeURL.isPending,
     imageUrlError: state.storeURL.error,
     isSignedIn: state.storeURL.isSignedIn,
-    router: state.storeURL.router
+    router: state.storeURL.router,
+    operType: state.updateOperation.operType
   }
 }
 
@@ -49,7 +50,8 @@ const mapDispatchToProps = (dispatch) => {
     onInputChange: (event) => dispatch(getUrlInput(event.target.value)),
     generateUrl: (file) => dispatch(generateURL(file)),
     onRoutChange: (route) => dispatch(onRoutChange(route)),
-    getDirectUrl: () => dispatch(getDirectUrl())
+    getDirectUrl: () => dispatch(getDirectUrl()),
+    changeOperation: (type) => dispatch(changeOperation(type))
   }
 }
 
@@ -78,31 +80,30 @@ class App extends React.Component {
     const width = Number(boxElement.width);
     const height = Number(boxElement.height);
     const getIndex = (data, vocab) => data.vocab_id === vocab;
-    let finalBoxes = Object.keys(clarfaiRegions).length ?
+    let finalBoxes = Object.keys(clarfaiRegions)[0] === "regions" ?
       (clarfaiRegions.regions).map((region) => {
         let concepts = region.data.concepts;
-        let ageIndex = concepts.findIndex(data => getIndex(data, "age_appearance"));
-        let genderIndex = concepts.findIndex(data => getIndex(data, "gender_appearance"));
-        let cultureIndex = concepts.findIndex(data => getIndex(data, "multicultural_appearance"));
         let clarfaiLocation = region.region_info.bounding_box;
-        console.log(concepts[ageIndex].name);
-        console.log(concepts[genderIndex].name);
-        console.log(concepts[cultureIndex].name);
+        let additionalData = this.props.operType === "face" ? { 
+          // age: concepts[concepts.findIndex(data => getIndex(data, "age_appearance"))].name,
+          // gender: concepts[concepts.findIndex(data => getIndex(data, "gender_appearance"))].name,
+          // culture: concepts[concepts.findIndex(data => getIndex(data, "multicultural_appearance"))].name
+        } : { apparel: region.data.concepts[0].name}
         return {
           top: height * clarfaiLocation.top_row,
           left: width * clarfaiLocation.left_col,
           bottom: height - clarfaiLocation.bottom_row * height,
           right: width - clarfaiLocation.right_col * width,
-          age: concepts[ageIndex].name,
-          gender: concepts[genderIndex].name,
-          culture: concepts[cultureIndex].name
+          additionalData: additionalData
         }
       }) : [];
     return {
       width: width,
       height: height,
       currentImageUrl: imageUrl, 
-      locations: finalBoxes}
+      locations: finalBoxes,
+      colorsData: Object.keys(clarfaiRegions)[0] === "colors" ? clarfaiRegions.colors : []
+    }
   }
 
   getBoxData = (data) => {
@@ -117,20 +118,18 @@ class App extends React.Component {
       }
   }
 
-onButtonClick = (imageUrl) => {
-  
+onButtonClick = (imageUrl, operation="face") => {
   if (this.props.imageUrlError === '' && !this.props.isImageUrlPending ) {    
       fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
         method: 'POST',  
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
           input : imageUrl,
-          type: 'face'
+          type: operation
         })
       })
       .then(response => response.json())
       .then(response => {
-        console.log(response);
         this.setState({clarifaiResponse: response});
         this.getBoxData(this.calculateBoxLocation(response, imageUrl));
       })
@@ -140,8 +139,14 @@ onButtonClick = (imageUrl) => {
   } 
 }
 
+updateOperation = (type) => {
+  this.setState({box: {}});
+  this.props.changeOperation(type);
+}
+
+
 changeBoxsize = (e) => {
-  if(this.props.isSignedIn) {
+  if(this.props.isSignedIn && Object.keys(this.state.box).length) {
     let currentImageElement = document.getElementById('clarifai-box');
     if(this.state.box.width !== Number(currentImageElement.width) || this.state.box.height !== Number(currentImageElement.height)) {
       this.getBoxData(this.calculateBoxLocation(this.state.clarifaiResponse, this.props.input));
@@ -159,31 +164,35 @@ componentWillUnmount() {
 }
 
 
-
 render() {
     const { box } = this.state;
-    const {input, onInputChange, onRoutChange, isSignedIn, router, getDirectUrl} = this.props;
+    const {input, onInputChange, onRoutChange, isSignedIn, router, getDirectUrl, operType} = this.props;
     return (
       <div className="App">
                <Particles className="particle"
                 params={particleOption}
               />
-        <Navigation onRoutChange={onRoutChange} isSignedIn={isSignedIn}/>
+        {
+        !isSignedIn ? <Navigation onRoutChange={onRoutChange}/> : null
+        }
         { router === 'home' 
-          ? <div> 
-              {/* <Options/>  */}
-              <div className="card-outer">
-                <Overframe 
-                    imageUrl={input} 
-                    box={box}
-                    getDirectUrl={getDirectUrl}
-                    onInputChange={onInputChange}
-                    onFileUpload={this.onFileUpload}
-                    onButtonClick={this.onButtonClick}
-                    user={this.state.user}
-                  ></Overframe>
-              </div>
-            </div> 
+          ? <>
+              <Options updateOperation={this.updateOperation} operType={operType} imageUrl={input} onButtonClick={this.onButtonClick} onRoutChange={onRoutChange}/> 
+              <div className="home-card-main"> 
+                <div className="card-outer">
+                  <Overframe 
+                      imageUrl={input} 
+                      box={box}
+                      getDirectUrl={getDirectUrl}
+                      onInputChange={onInputChange}
+                      onFileUpload={this.onFileUpload}
+                      onButtonClick={this.onButtonClick}
+                      operType={operType}
+                      user={this.state.user}
+                    ></Overframe>
+                </div>
+              </div> 
+            </>
           : (router === 'signin' ? <SignIn onRoutChange={onRoutChange} getUser={this.getUser}/> : <Register onRoutChange={onRoutChange} getUser={this.getUser}/> )
         }
       </div>

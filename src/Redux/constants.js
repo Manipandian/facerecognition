@@ -9,6 +9,7 @@ export const getImageUrl = {
 }
 
 export const ON_ROUTER_CHANGE = "ON_ROUTER_CHANGE";
+export const ON_OPERATION_CHANGE = "ON_OPERATION_CHANGE";
 
 
 

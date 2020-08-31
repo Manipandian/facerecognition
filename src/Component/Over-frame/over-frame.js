@@ -6,7 +6,9 @@ import Description from '../Description/description';
 
 
 const Overframe = (props) => {
-    let choosedOperation = "Face Recognition";
+    let choosedOperation = props.operType === 'face'
+    ? "Face Recognition" : props.operType === 'apparel'
+    ? "Apparel Detector" : "Color Identifier";
     let dataAvailable = Boolean(Object.keys(props.box).length);
     let height; 
     let width; 
@@ -16,7 +18,7 @@ const Overframe = (props) => {
     }
 
     useEffect(() => {
-        props.onButtonClick(props.imageUrl);
+        props.onButtonClick(props.imageUrl, props.operType);
 
     }, [props.imageUrl])
 
@@ -24,7 +26,7 @@ const Overframe = (props) => {
         return (
             Object.keys(props.box).length && props.box.locations && props.box.currentImageUrl === props.imageUrl?
             props.box.locations.map((location, index) => {
-                return <BoundingBox box={location} key={index} height={props.box.height}/>   
+                return <BoundingBox box={location} key={index} height={props.box.height} operType={props.operType}/>   
             }) : <div></div>
         )
     }
@@ -39,25 +41,6 @@ const Overframe = (props) => {
                     }
                 </div>
                 <div className="content-frame">
-                    <div className="info-skeleton">
-                        <div className="custom-image-button">
-                            <input type="file" id="file-1" className="inputfile inputfile-1" accept="image/*" onChange={props.onFileUpload}/>
-					        <label htmlFor="file-1" style={{fontSize: '1rem'}}><span>Choose a file</span></label>
-                            {" ,or provide direct link"}
-                            <div style={{padding: '1rem', display: 'flex'}}>
-                            <input className="input-element" id="url-text-box" style={{width: '65%', backgroundColor: 'rgba(0,0,0,0.2)'}} type="text" 
-                                // onKeyPress={
-                                //     (arg) => 
-                                //     {
-                                //         if(arg.charC ode === 13 && arg.target.value !== '') {
-                                //            console.log(arg.target.value)
-                                //         }
-                                //     }
-                                // }
-                                placeholder="Paste Url..."></input><button onClick={props.getDirectUrl} className="url-button">Submit</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div className="over-frame">
@@ -76,10 +59,20 @@ const Overframe = (props) => {
                         <div className="info-display">
                             {
                                 !dataAvailable ? <Spinner/> :
-                                <Description data={props.box.locations.length}/>
+                                <Description boxData={props.box} operType={props.operType}/>
                             }
                         </div>
+                        <div className="model-info-image">
+                            <input type="file" id="file-1" className="inputfile inputfile-1" accept="image/*" onChange={props.onFileUpload}/>
+                            <label htmlFor="file-1" style={{fontSize: '1rem'}}><span>Choose a file</span></label>
+                            {" ,or provide direct link"}
+                            <div style={{padding: '1rem', display: 'flex'}}>
+                            <input className="input-element" id="url-text-box" style={{width: '65%', backgroundColor: 'rgba(0,0,0,0.2)'}} type="text" 
+                                placeholder="Paste Url..."></input><button onClick={props.getDirectUrl} className="url-button">Submit</button>
+                            </div>
+                        </div>
                     </div>
+                   
                 </div>
             </div>
         </div>

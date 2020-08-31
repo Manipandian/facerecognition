@@ -1,11 +1,11 @@
-.info-display {
+/* .info-display {
     width: 90%;
     height: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-}
+} */
 
 .face-info {
     color: #b6b6b6;
@@ -14,12 +14,34 @@
     font-weight: 750;
 }
 
+.info-container {
+  width: 100%;
+  height: 100%;
+  /* margin-bottom: 1rem; */
+}
+
+.color-pallet {
+  display: flex;
+  width: 80%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  color: white;
+  margin: 0.25rem auto;
+}
+
 @media only screen and (max-width: 1000px) {
-    .info-display {
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
+  .color-pallet {
+    width: 100%;
   }
+}
+
+@media only screen and (max-width: 450px) {
+  .info-container {
+    width: 90%;
+  }
+}
+
 
 
 

@@ -1,13 +1,20 @@
 import axios from 'axios';
 
 import {
-    getImageUrl, ON_ROUTER_CHANGE
+    getImageUrl, ON_ROUTER_CHANGE, ON_OPERATION_CHANGE
 } from './constants.js';
 
 export const onRoutChange = (route) => {
     return {
         type: ON_ROUTER_CHANGE,
         payload: route
+    }
+}
+
+export const changeOperation = (operation) => {
+    return {
+        type: ON_OPERATION_CHANGE,
+        payload: operation
     }
 }
 
@@ -20,7 +27,6 @@ export const getUrlInput = (input) => {
 
 export const getDirectUrl = () => {
     let inputElement = document.getElementById('url-text-box');
-    console.log(inputElement.value);
     if(inputElement.value && inputElement.value !== '') {
         return {
             type: getImageUrl.GET_DIRECT_URL_CONTENT,

@@ -1,19 +1,27 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './options.css';
 
-const Options = (props) => {
+const Options = ({updateOperation, operType, onButtonClick, imageUrl, onRoutChange}) => {
+    useEffect(() => {
+        onButtonClick(imageUrl, operType);
+    }, [operType])
     return(
-        <div className="options-main">
-            <div>
-                <button className="button-style" onClick={() => console.log("Face recogntion")}>Face Recognition</button>
-            </div>
-            <div>
-                <button className="button-style" onClick={() => console.log("Gadget recogntion")}>Gadget Recognition</button>
-            </div>
-            <div>
-                <button className="button-style" onClick={() => console.log("Color recogntion")}>Color Recognition</button>
-            </div>
-        </div>
+        <nav className="options-main">
+            <ul className="list-container">
+                <li className="option-list-item">
+                    <button className="button-style" onClick={() => updateOperation("face")}>Face Recognition</button>
+                </li>
+                <li className="option-list-item">
+                    <button className="button-style" onClick={() => updateOperation("apparel")}>Gadget Recognition</button>
+                </li>
+                <li className="option-list-item">
+                    <button className="button-style" onClick={() => updateOperation("color")}>Color Recognition</button>
+                </li>
+                <li className="option-list-item" style={{marginLeft: 'auto'}}>
+                    <button className="button-style" onClick={() => onRoutChange('signin')}>Sign Out</button>
+                </li>
+            </ul>
+        </nav>
     )
 }
 
