@@ -20,7 +20,7 @@ class SignIn extends React.Component {
     }
 
     onSignIn = () => {
-        fetch('https://blooming-tundra-10838.herokuapp.com/signIn', {
+        fetch('https://smart-imagesense.herokuapp.com/signIn', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({

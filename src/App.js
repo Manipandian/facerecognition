@@ -120,7 +120,7 @@ class App extends React.Component {
 
 onButtonClick = (imageUrl, operation="face") => {
   if (this.props.imageUrlError === '' && !this.props.isImageUrlPending ) {    
-      fetch('https://blooming-tundra-10838.herokuapp.com/imageurl', {
+      fetch('https://smart-imagesense.herokuapp.com/imageurl', {
         method: 'POST',  
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({

@@ -28,7 +28,7 @@ class Register extends React.Component {
         if(!this.state.email || !this.state.name || !this.state.passWord) {
             this.setState({warning: "Please enter valid data"})
         } else {
-            fetch('https://blooming-tundra-10838.herokuapp.com/register', {
+            fetch('https://smart-imagesense.herokuapp.com/register', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
